@@ -65,15 +65,17 @@ const tasks = [
 ];
 
 const Task = ({ task, onToggleStatus }) => (
-  <div>
-    <p>{task.description}</p>
-    <p>{task.assignee}</p>
-    {task.status === "Pending" && <p>{task.deadline}</p>}
-    <p>{task.status}</p>
-    <button onClick={() => onToggleStatus(task.description)}>
-      Toggle Status
-    </button>
-  </div>
+  <tr>
+    <td>{task.description}</td>
+    <td>{task.assignee}</td>
+    {task.status === "Pending" ? <td>{task.deadline}</td> : <td>-</td>}
+    <td>{task.status}</td>
+    <td>
+      <button onClick={() => onToggleStatus(task.description)}>
+        Toggle Status
+      </button>
+    </td>
+  </tr>
 );
 
 const Tasks = () => {
@@ -82,8 +84,12 @@ const Tasks = () => {
   const [filteredTasks, setFilteredTasks] = useState(tasks);
 
   useEffect(() => {
-    const filtered = taskList.filter((task) =>
-      task.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = taskList.filter(
+      (task) =>
+        task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.assignee.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.deadline.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.status.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredTasks(filtered);
   }, [searchQuery, taskList]);
@@ -105,9 +111,22 @@ const Tasks = () => {
     <div>
       <h1>Tasks</h1>
       <SearchFilter searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      {filteredTasks.map((task, index) => (
-        <Task key={index} task={task} onToggleStatus={toggleStatus} />
-      ))}
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Assignee</th>
+            <th>Deadline</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredTasks.map((task, index) => (
+            <Task key={index} task={task} onToggleStatus={toggleStatus} />
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
